@@ -64,7 +64,7 @@ Tipični uzroci u vibe-kodiranim aplikacijama:
 - [ ] AI optimizovao za brzinu, zanemario sanitizaciju
 - [ ] Nedostatak threat modelinga u dizajn fazi
 - [ ] Nema peer review — AI izlaz prihvaćen kao finalan
-- [ ] Halucinovana zavisnost ubačena bez provjere
+- [ ] Halucinovana zavisnost ubačena bez provere
 - [ ] Error handling sveden na prazan catch blok
 
 ---

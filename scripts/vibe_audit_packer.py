@@ -11,7 +11,7 @@ Pokretanje:
 Izlaz:
     .vibe_audit/CURRENT_CONTEXT.md
 
-Zahtijeva: Python 3.8+ (bez eksternih zavisnosti)
+Zahteva: Python 3.8+ (bez eksternih zavisnosti)
 """
 
 import os
@@ -62,11 +62,11 @@ MAX_TOTAL_FILES = 200             # Limit ukupnog broja fajlova
 # ─── Pro Mega-Prompt ──────────────────────────────────────────────────────────
 
 def load_pro_prompt(root_dir: Path) -> str:
-    """Učitava Pro Audit Mega-Prompt iz prompts/ direktorija ako postoji."""
+    """Učitava Pro Audit Mega-Prompt iz prompts/ direktorijuma ako postoji."""
     prompt_path = root_dir / 'prompts' / 'pro_audit_prompt.md'
     if prompt_path.exists():
         content = prompt_path.read_text(encoding='utf-8', errors='ignore')
-        # Izvuci samo dio između markera ako postoje
+        # Izvuci samo deo između markera ako postoje
         if '---BEGIN PROMPT---' in content and '---END PROMPT---' in content:
             start = content.index('---BEGIN PROMPT---') + len('---BEGIN PROMPT---')
             end = content.index('---END PROMPT---')
@@ -198,8 +198,8 @@ def get_git_info(root_dir: str) -> dict:
 
 
 def detect_stack(root_dir: Path) -> dict:
-    """Detektuje tehnološki stack projekta na osnovu fajlova."""
-    stack = {
+    """Detektuje tehnološki stek projekta na osnovu fajlova."""
+    stek = {
         'has_python': False, 'has_nodejs': False, 'has_java': False,
         'has_go': False, 'has_rust': False, 'has_dotnet': False,
         'has_docker': False, 'has_k8s': False, 'has_terraform': False,
@@ -222,29 +222,29 @@ def detect_stack(root_dir: Path) -> dict:
         for file_pattern in files:
             if '*' in file_pattern:
                 if list(root_dir.glob(f'**/{file_pattern}')):
-                    stack[flag] = True
+                    stek[flag] = True
             else:
                 if (root_dir / file_pattern).exists():
-                    stack[flag] = True
+                    stek[flag] = True
 
-    stack['has_github_actions'] = (root_dir / '.github' / 'workflows').exists()
-    stack['has_gitlab_ci'] = (root_dir / '.gitlab-ci.yml').exists()
-    stack['has_k8s'] = (root_dir / 'k8s').exists() or (root_dir / 'kubernetes').exists()
+    stek['has_github_actions'] = (root_dir / '.github' / 'workflows').exists()
+    stek['has_gitlab_ci'] = (root_dir / '.gitlab-ci.yml').exists()
+    stek['has_k8s'] = (root_dir / 'k8s').exists() or (root_dir / 'kubernetes').exists()
 
     # Package managers
     if (root_dir / 'package-lock.json').exists():
-        stack['package_managers'].append('npm')
+        stek['package_managers'].append('npm')
     if (root_dir / 'yarn.lock').exists():
-        stack['package_managers'].append('yarn')
+        stek['package_managers'].append('yarn')
     if (root_dir / 'pnpm-lock.yaml').exists():
-        stack['package_managers'].append('pnpm')
+        stek['package_managers'].append('pnpm')
     if (root_dir / 'poetry.lock').exists():
-        stack['package_managers'].append('poetry')
+        stek['package_managers'].append('poetry')
 
-    return stack
+    return stek
 
 
-def generate_scope_matrix(root_dir: Path, git_info: dict, stack: dict) -> str:
+def generate_scope_matrix(root_dir: Path, git_info: dict, stek: dict) -> str:
     """Generiše scope matricu dostupnih artefakata."""
     def check(condition: bool) -> str:
         return '[OK] available' if condition else '[-] unspecified'
@@ -257,18 +257,18 @@ def generate_scope_matrix(root_dir: Path, git_info: dict, stack: dict) -> str:
         ("Repo URL", check(bool(git_info.get('remote_url'))), git_info.get('remote_url', 'N/A')),
         ("Branch", check(bool(git_info.get('branch'))), git_info.get('branch', 'N/A')),
         ("Commit SHA", check(bool(git_info.get('commit_sha'))), git_info.get('commit_short', 'N/A')),
-        ("Aktivne Git izmjene", check(bool(git_info.get('status'))),
-         f"{len(git_info.get('status', '').splitlines())} izmijenjenih fajlova" if git_info.get('status') else "čist radni direktorijum"),
-        ("Python manifest (pyproject.toml/requirements.txt)", check(stack.get('has_python')), ""),
-        ("Node.js manifest (package.json)", check(stack.get('has_nodejs')), f"Package manager: {', '.join(stack['package_managers']) or 'N/A'}"),
-        ("Java manifest (pom.xml/build.gradle)", check(stack.get('has_java')), ""),
-        ("Go manifest (go.mod)", check(stack.get('has_go')), ""),
-        ("Rust manifest (Cargo.toml)", check(stack.get('has_rust')), ""),
-        ("Dockerfile / docker-compose", check(stack.get('has_docker')), ""),
-        ("Kubernetes manifesti", check(stack.get('has_k8s')), ""),
-        ("Terraform/IaC fajlovi", check(stack.get('has_terraform')), ""),
-        ("GitHub Actions workflows", check(stack.get('has_github_actions')), ""),
-        ("GitLab CI/CD konfiguracija", check(stack.get('has_gitlab_ci')), ""),
+        ("Aktivne Git izmene", check(bool(git_info.get('status'))),
+         f"{len(git_info.get('status', '').splitlines())} izmenjenih fajlova" if git_info.get('status') else "čist radni direktorijum"),
+        ("Python manifest (pyproject.toml/requirements.txt)", check(stek.get('has_python')), ""),
+        ("Node.js manifest (package.json)", check(stek.get('has_nodejs')), f"Package manager: {', '.join(stek['package_managers']) or 'N/A'}"),
+        ("Java manifest (pom.xml/build.gradle)", check(stek.get('has_java')), ""),
+        ("Go manifest (go.mod)", check(stek.get('has_go')), ""),
+        ("Rust manifest (Cargo.toml)", check(stek.get('has_rust')), ""),
+        ("Dockerfile / docker-compose", check(stek.get('has_docker')), ""),
+        ("Kubernetes manifesti", check(stek.get('has_k8s')), ""),
+        ("Terraform/IaC fajlovi", check(stek.get('has_terraform')), ""),
+        ("GitHub Actions workflows", check(stek.get('has_github_actions')), ""),
+        ("GitLab CI/CD konfiguracija", check(stek.get('has_gitlab_ci')), ""),
         ("ADR-ovi", check(list((root_dir / '.vibe_audit' / 'adrs').glob('*.md')) if (root_dir / '.vibe_audit' / 'adrs').exists() else []), ""),
         ("Runtime logovi", "⚠️ unspecified", "Nije dostavljeno — označiti kao `blocked` gdje relevantno"),
         ("Metrike i tracing", "⚠️ unspecified", "Nije dostavljeno — označiti kao `blocked` gdje relevantno"),
@@ -286,14 +286,14 @@ def generate_scope_matrix(root_dir: Path, git_info: dict, stack: dict) -> str:
     return "\n".join(lines)
 
 
-def generate_recommended_commands(stack: dict) -> str:
-    """Generiše preporučene komande za provjeru na osnovu detektovanog stack-a."""
-    lines = ["## Preporučene Komande za Provjeru (prilagoditi stack-u)\n"]
+def generate_recommended_commands(stek: dict) -> str:
+    """Generiše preporučene komande za proveru na osnovu detektovanog steka."""
+    lines = ["## Preporučene Komande za Proveru (prilagoditi steku)\n"]
     lines.append("> Pokrenite ove komande u projektu koji analizirate i priložite izlaze:\n")
 
-    if stack.get('has_python'):
+    if stek.get('has_python'):
         lines.append("```bash")
-        lines.append("# Python — Bandit AST analiza sigurnosti")
+        lines.append("# Python — Bandit AST analiza bezbednosti")
         lines.append("bandit -r . -f json -o bandit.json --exit-zero")
         lines.append("")
         lines.append("# Python — Testovi i coverage")
@@ -303,13 +303,13 @@ def generate_recommended_commands(stack: dict) -> str:
         lines.append("       --cov-report=json:coverage.json")
         lines.append("```\n")
 
-    if stack.get('has_nodejs'):
+    if stek.get('has_nodejs'):
         lines.append("```bash")
         lines.append("# Node.js — ESLint statička analiza")
         lines.append("npx eslint . --format json --output-file eslint-results.json")
         lines.append("```\n")
 
-    if stack.get('has_java'):
+    if stek.get('has_java'):
         lines.append("```bash")
         lines.append("# Java — Testovi i JaCoCo coverage")
         lines.append("mvn test jacoco:report")
@@ -327,7 +327,7 @@ def generate_recommended_commands(stack: dict) -> str:
     lines.append("         --exit-code 1 --severity CRITICAL,HIGH .")
     lines.append("```\n")
 
-    if stack.get('has_docker'):
+    if stek.get('has_docker'):
         lines.append("```bash")
         lines.append("# Docker image scan")
         lines.append("trivy image <image-ref> --format json --output trivy-image.json")
@@ -365,7 +365,7 @@ def generate_recommended_commands(stack: dict) -> str:
 
     lines.append("```bash")
     lines.append("# Statička analiza — SonarQube")
-    lines.append("# Primijeni 'Sonar way for AI Code' quality gate za AI-generisan kod")
+    lines.append("# Primeni 'Sonar way for AI Code' quality gate za AI-generisan kod")
     lines.append("sonar-scanner \\")
     lines.append("  -Dsonar.projectKey=<key> \\")
     lines.append("  -Dsonar.sources=. \\")
@@ -377,7 +377,7 @@ def generate_recommended_commands(stack: dict) -> str:
 
 
 def generate_file_tree(root_dir: str) -> str:
-    """Generiše string reprezentaciju stabla direktorija."""
+    """Generiše string reprezentaciju stabla direktorijuma."""
     lines = []
 
     def _walk(directory: str, prefix: str = ""):
@@ -454,7 +454,7 @@ def collect_file_contents(root_dir: Path) -> tuple:
     count = 0
 
     for root, dirs, files in os.walk(root_dir):
-        # Filtriraj direktorije in-place
+        # Filtriraj direktorijume in-place
         dirs[:] = [d for d in sorted(dirs) if d not in EXCLUDE_DIRS]
 
         for file in sorted(files):
@@ -508,11 +508,11 @@ def main():
         '--mode', '-m',
         choices=['quick', 'deep'],
         default='deep',
-        help='Modo analize: quick (1-2h) ili deep (1-3 dana) — default: deep'
+        help='Režim analize: quick (1-2h) ili deep (1-3 dana) — default: deep'
     )
     args = parser.parse_args()
 
-    # Resolviraj root direktorij
+    # Resolviraj root direktorijum
     script_dir = Path(__file__).resolve().parent
     if args.path:
         root_dir = Path(args.path).resolve()
@@ -522,18 +522,18 @@ def main():
             root_dir = Path(os.getcwd()).resolve()
 
     if not root_dir.exists():
-        print(f"[VAF] GREŠKA: Direktorij ne postoji: {root_dir}", file=sys.stderr)
+        print(f"[VAF] GREŠKA: direktorijum ne postoji: {root_dir}", file=sys.stderr)
         sys.exit(1)
 
     print("[VAF] =================================================")
     print("[VAF]  Vibe-Audit Framework v2.0 - Context Packer")
     print("[VAF] =================================================")
-    print(f"[VAF] Root direktorij : {root_dir}")
-    print(f"[VAF] Modo analize    : {args.mode}")
-    print(f"[VAF] Vrijeme         : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"[VAF] Root direktorijum : {root_dir}")
+    print(f"[VAF] Režim analize   : {args.mode}")
+    print(f"[VAF] Vreme         : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("[VAF] -------------------------------------------------")
 
-    # Kreiraj output direktorije
+    # Kreiraj output direktorijume
     vibe_audit_dir = root_dir / '.vibe_audit'
     vibe_audit_dir.mkdir(exist_ok=True)
     (vibe_audit_dir / 'adrs').mkdir(exist_ok=True)
@@ -544,12 +544,12 @@ def main():
     print("[VAF] [1/6] Prikupljanje Git informacija...")
     git_info = get_git_info(str(root_dir))
 
-    print("[VAF] [2/6] Detekcija tehnološkog stack-a...")
-    stack = detect_stack(root_dir)
-    detected = [k.replace('has_', '') for k, v in stack.items() if v and k.startswith('has_')]
+    print("[VAF] [2/6] Detekcija tehnološkog steka...")
+    stek = detect_stack(root_dir)
+    detected = [k.replace('has_', '') for k, v in stek.items() if v and k.startswith('has_')]
     print(f"[VAF]       Detektovano: {', '.join(detected) or 'ništa specifično'}")
 
-    print("[VAF] [3/6] Generisanje stabla direktorija...")
+    print("[VAF] [3/6] Generisanje stabla direktorijuma...")
     file_tree = generate_file_tree(str(root_dir))
 
     print("[VAF] [4/6] Prikupljanje informacija o zavisnostima...")
@@ -564,8 +564,8 @@ def main():
 
     # ─── Generisanje scope matrice i preporučenih komandi ────────────────────
 
-    scope_matrix = generate_scope_matrix(root_dir, git_info, stack)
-    recommended_commands = generate_recommended_commands(stack)
+    scope_matrix = generate_scope_matrix(root_dir, git_info, stek)
+    recommended_commands = generate_recommended_commands(stek)
 
     # ─── Učitavanje Pro Mega-Prompta ──────────────────────────────────────────
 
@@ -578,7 +578,7 @@ def main():
     # ─── Kompajliranje output fajla ───────────────────────────────────────────
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    mode_label = "BRZA PROVJERA (1–2h)" if args.mode == 'quick' else "DUBINSKA ANALIZA (1–3 dana)"
+    mode_label = "BRZA PROVERA (1–2h)" if args.mode == 'quick' else "DUBINSKA ANALIZA (1–3 dana)"
 
     print(f"[VAF] Kompajliranje kontekst paketa...")
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -586,8 +586,8 @@ def main():
         # ── HEADER ────────────────────────────────────────────────────────────
         f.write("<!-- VAF v2.0 CURRENT_CONTEXT.md — Auto-generated, DO NOT EDIT -->\n\n")
         f.write("# AUDIT PROTOKOL I SISTEMSKE INSTRUKCIJE\n")
-        f.write(f"> Generirano: **{timestamp}** | Modo: **{mode_label}** | Target: `{root_dir}`\n\n")
-        f.write("Primijenite ovaj protokol na kontekst repozitorijuma u nastavku:\n\n")
+        f.write(f"> Generisano: **{timestamp}** | Režim: **{mode_label}** | Target: `{root_dir}`\n\n")
+        f.write("Primenite ovaj protokol na kontekst repozitorijuma u nastavku:\n\n")
 
         # ── MEGA-PROMPT ───────────────────────────────────────────────────────
         f.write(mega_prompt)
@@ -596,14 +596,14 @@ def main():
         # ── REPO METAPODACI ───────────────────────────────────────────────────
         f.write("# STANJE REPOZITORIJUMA I KONTEKST BUNDLE\n\n")
         f.write("## 1. Osnovna Identifikacija\n\n")
-        f.write(f"| Polje | Vrijednost |\n|---|---|\n")
+        f.write(f"| Polje | Vrednost |\n|---|---|\n")
         f.write(f"| **Bundle generisan** | {timestamp} |\n")
         f.write(f"| **Modo analize** | {mode_label} |\n")
-        f.write(f"| **Target direktorij** | `{root_dir}` |\n")
+        f.write(f"| **Target direktorijum** | `{root_dir}` |\n")
         f.write(f"| **Remote URL** | `{git_info.get('remote_url', 'unspecified')}` |\n")
         f.write(f"| **Branch** | `{git_info.get('branch', 'unspecified')}` |\n")
         f.write(f"| **Commit SHA** | `{git_info.get('commit_sha', 'unspecified')}` |\n")
-        f.write(f"| **Detektovani stack** | {', '.join(detected) or 'unspecified'} |\n")
+        f.write(f"| **Detektovani stek** | {', '.join(detected) or 'unspecified'} |\n")
         f.write(f"| **Broj uključenih fajlova** | {len(file_contents)} |\n")
         f.write(f"| **OWASP verzija** | Top 10:2025, API Security Top 10:2023 |\n")
         f.write(f"| **Accessibility standard** | WCAG 2.2 AA |\n")
@@ -613,31 +613,31 @@ def main():
         f.write(scope_matrix)
 
         # ── STABLO DIREKTORIJA ────────────────────────────────────────────────
-        f.write("## 3. Stablo Direktorija\n\n")
+        f.write("## 3. Stablo direktorijuma\n\n")
         f.write("```text\n")
         f.write(file_tree)
         f.write("\n```\n\n")
 
         # ── GIT IZMJENE ───────────────────────────────────────────────────────
-        f.write("## 4. Git Izmjene (Vibe Coding Session)\n\n")
+        f.write("## 4. Git Izmene (Vibe Coding Session)\n\n")
         if git_info.get('log_recent'):
             f.write("### Nedavni commit-ovi\n```text\n")
             f.write(git_info['log_recent'])
             f.write("\n```\n\n")
 
         if git_info.get('status'):
-            f.write("### Aktivni status (izmijenjeni/novi fajlovi)\n```text\n")
+            f.write("### Aktivni status (izmenjeni/novi fajlovi)\n```text\n")
             f.write(git_info['status'])
             f.write("\n```\n\n")
         else:
-            f.write("*Git status: čist radni direktorij.*\n\n")
+            f.write("*Git status: čist radni direktorijum.*\n\n")
 
         if git_info.get('diff'):
-            f.write("### Git Diff (izmjene od posljednjeg commit-a)\n```diff\n")
+            f.write("### Git Diff (izmene od poslednjeg commit-a)\n```diff\n")
             f.write(git_info['diff'])
             f.write("\n```\n\n")
         else:
-            f.write("*Git diff: nema aktivnih izmjena.*\n\n")
+            f.write("*Git diff: nema aktivnih izmena.*\n\n")
 
         # ── ZAVISNOSTI ────────────────────────────────────────────────────────
         f.write("## 5. Manifest Fajlovi Zavisnosti\n\n")
@@ -650,14 +650,14 @@ def main():
         f.write("\n\n")
 
         # ── PREPORUČENE KOMANDE ───────────────────────────────────────────────
-        f.write("## 7. Preporučene Komande za Provjeru\n\n")
+        f.write("## 7. Preporučene Komande za Proveru\n\n")
         f.write(recommended_commands)
         f.write("\n\n")
 
         # ── PRESKOČENI FAJLOVI ────────────────────────────────────────────────
         if skipped_files:
             f.write("## 8. Preskočeni Fajlovi\n\n")
-            f.write("*Sljedeći fajlovi su preskočeni (preveliki, binarni ili van opsega):*\n\n")
+            f.write("*Sledeći fajlovi su preskočeni (preveliki, binarni ili van opsega):*\n\n")
             for sf in skipped_files:
                 f.write(f"- {sf}\n")
             f.write("\n")
@@ -672,15 +672,15 @@ def main():
     # ─── Summary ──────────────────────────────────────────────────────────────
     file_size_kb = output_file.stat().st_size / 1024
     print("-------------------------------------------------")
-    print("[VAF] USPJESNO! Kontekst fajl generisan:")
+    print("[VAF] USPEŠNO! Kontekst fajl generisan:")
     print(f"[VAF]   >> {output_file.absolute()}")
-    print(f"[VAF]   >> Velicina: {file_size_kb:.1f} KB")
+    print(f"[VAF]   >> Veličina: {file_size_kb:.1f} KB")
     print(f"[VAF]   >> Fajlova ukljuceno: {len(file_contents)}")
     print("-------------------------------------------------")
-    print("[VAF] SLJEDECI KORAK:")
+    print("[VAF] SLEDEĆI KORAK:")
     print("[VAF]   Otvorite .vibe_audit/CURRENT_CONTEXT.md i prevucite")
     print("[VAF]   fajl u Claude, Gemini, ChatGPT ili bilo koji LLM.")
-    print("[VAF]   AI ce automatski primijeniti visestr. audit protokol.")
+    print("[VAF]   AI će automatski primeniti višedimenzionalni audit protokol.")
     print("=================================================")
 
 

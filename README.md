@@ -10,9 +10,9 @@ VAF omogućava svakom AI modelu (Gemini, Claude, ChatGPT, Cursor, Cline) da obav
 
 ## Zašto VAF?
 
-Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicionalno razvojno trenje: peer review, unit testove, dokumentovanje arhitekture. VAF veštački ponovo uvodi to trenje u fazi verifikacije — strukturiranim promptovanjem, automatizovanim pakovanjem konteksta i standardizovanim šablonima za nalaze.
+Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicionalno razvojno trenje: peer review, unit testove, dokumentovanje arhitekture. VAF veštački ponovo uvodi to trenje u fazi verifikacije — strukturisanim promptovanjem, automatizovanim pakovanjem konteksta i standardizovanim šablonima za nalaze.
 
-**Ključni problem koji VAF rješava**: LLM-ovi pate od "tunelskog vida" — kada dobiju generičan zahtjev "proveri kod", fokusiraju se na jednu dimenziju (obično sintaksu) i ignorišu bezbjednost, arhitekturu i poslovnu logiku. VAF primorava model na tri nezavisne persone i samokorekciju.
+**Ključni problem koji VAF rešava**: LLM-ovi pate od "tunelskog vida" — kada dobiju generičan zahtev "proveri kod", fokusiraju se na jednu dimenziju (obično sintaksu) i ignorišu bezbednost, arhitekturu i poslovnu logiku. VAF primorava model na tri nezavisne persone i samokorekciju.
 
 ---
 
@@ -31,8 +31,8 @@ Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicio
 │   ├── adr_template.md           ← Šablon za Architecture Decision Records
 │   ├── scope_matrix_template.md  ← Šablon za inventar artefakata
 │   └── finding_template.md       ← Šablon za dokumentovanje nalaza
-└── .vibe_audit/                  ← Generirani output (gitignore!)
-    ├── CURRENT_CONTEXT.md        ← LLM-ready paket (auto-generirano)
+└── .vibe_audit/                  ← Generisani output (gitignore!)
+    ├── CURRENT_CONTEXT.md        ← LLM-ready paket (auto-generisano)
     └── adrs/                     ← Arhiva ADR-ova
 ```
 
@@ -42,7 +42,7 @@ Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicio
 
 ### Korak 1: Kopirajte u vaš projekat
 ```bash
-# Kopirajte sljedeće fajlove u koren vašeg projekta:
+# Kopirajte sledeće fajlove u koren vašeg projekta:
 .cursorrules
 llms.txt
 prompts/pro_audit_prompt.md
@@ -55,7 +55,7 @@ templates/
 # Dubinska analiza (preporučeno)
 python scripts/vibe_audit_packer.py
 
-# Brza provjera
+# Brza provera
 python scripts/vibe_audit_packer.py --mode quick
 
 # Za drugi projekat
@@ -74,25 +74,25 @@ Prevucite `.vibe_audit/CURRENT_CONTEXT.md` u:
 
 ## Šta Dobijate kao Izlaz
 
-AI primjenjuje protokol sa tri persone i isporučuje:
+AI primenjuje protokol sa tri persone i isporučuje:
 
 | Sekcija | Sadržaj |
 |---|---|
-| **Executive Summary** | 3 rečenice: šta je provjereno, najveći rizici, go/no-go |
+| **Executive Summary** | 3 rečenice: šta je provereno, najveći rizici, go/no-go |
 | **Scope & Artefakt Matrica** | Šta je dostavljeno, šta je `unspecified` |
 | **Finding Matrix** | Svi nalazi po domenima, prioritetima i severity |
-| **Detaljni Nalazi** | ID, dokaz, OWASP mapiranje, reprodukcija, fix, kod primjer |
+| **Detaljni Nalazi** | ID, dokaz, OWASP mapiranje, reprodukcija, fix, primer koda |
 | **Mermaid Dijagram** | Vizualizacija toka analize |
-| **Top 5 Prioriteta** | P0/P1 nalazi koje treba popraviti prije produkcije |
+| **Top 5 Prioriteta** | P0/P1 nalazi koje treba popraviti pre produkcije |
 | **Metrički Grafici** | p95 latencija, error rate, coverage (ako postoje podaci) |
-| **Unspecified Data** | Šta nedostaje i šta bi povećalo sigurnost zaključaka |
+| **Unspecified Data** | Šta nedostaje i šta bi povećalo bezbednost zaključaka |
 | **Go/No-Go Verdict** | `go` / `conditional go` / `no-go` sa obrazloženjem |
 
 ---
 
 ## Ugrađeni Standardi
 
-### Bezbjednost
+### Bezbednost
 | Standard | Verzija | Opis |
 |---|---|---|
 | OWASP Top 10 | **2025** (A01–A10) | Novi: A03 Supply Chain Failures, A10 Exceptional Conditions |
@@ -130,10 +130,10 @@ AI primjenjuje protokol sa tri persone i isporučuje:
 
 | Status | Značenje |
 |---|---|
-| `executed` | Provjera je zaista izvršena, postoji konkretan dokaz |
+| `executed` | Provera je zaista izvršena, postoji konkretan dokaz |
 | `inferred` | Zaključeno iz koda/konfiguracije/artefakata bez direktnog izvršavanja |
-| `blocked` | Nije moglo biti provjereno zbog nedostajućih podataka/pristupa |
-| `not_applicable` | Nije primjenjivo na ovaj stack/aplikaciju |
+| `blocked` | Nije moglo biti provereno zbog nedostajućih podataka/pristupa |
+| `not_applicable` | Nije primenjivo na ovaj stek/aplikaciju |
 
 ---
 
@@ -146,7 +146,7 @@ Svaka važna arhitektonska odluka treba biti dokumentovana:
 cp templates/adr_template.md .vibe_audit/adrs/0001-my-decision.md
 
 # 2. Popunite šablon
-# 3. Kod sljedećeg pokretanja packer-a, ADR će biti automatski uključen u kontekst
+# 3. Kod sledećeg pokretanja packer-a, ADR će biti automatski uključen u kontekst
 python scripts/vibe_audit_packer.py
 ```
 

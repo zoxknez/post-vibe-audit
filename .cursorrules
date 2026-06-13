@@ -1,5 +1,5 @@
 # Cursor AI Rules of Engagement — Vibe-Audit Framework v2.0
-# Primjenjuje se automatski za sve Cursor, Cline, Copilot i kompatibilne AI asistente.
+# Primenjuje se automatski za sve Cursor, Cline, Copilot i kompatibilne AI asistente.
 # Referentni standardi: OWASP Top 10:2025 | OWASP API Security Top 10:2023 |
 #   WCAG 2.2 AA | GDPR Čl.25/30/32 | SonarQube "Sonar way for AI Code" (2025) |
 #   Trivy 0.50+ | Bandit AST | ASVS
@@ -10,18 +10,18 @@
 
 ### A01:2025 — Broken Access Control
 - NIKAD ne implementiraj autorizaciju samo na klijentskoj strani (JS routing/UI skrivanje).
-- Svaki server-side endpoint mora imati eksplicitnu provjeru permisija (RBAC/ABAC).
-- Provjeri IDOR: pristup resursima mora biti validovan prema identity-u korisnika koji šalje zahtjev, ne samo prema ID-u resursa.
-- SSRF zaštita: nikad ne prosljeđuj korisnički unos kao URL za interni HTTP poziv bez whitelist provjere.
+- Svaki server-side endpoint mora imati eksplicitnu proveru permisija (RBAC/ABAC).
+- Proveri IDOR: pristup resursima mora biti validovan prema identity-u korisnika koji šalje zahtjev, ne samo prema ID-u resursa.
+- SSRF zaštita: nikad ne prosljeđuj korisnički unos kao URL za interni HTTP poziv bez whitelist provere.
 
 ### A02:2025 — Security Misconfiguration
-- Ne ostavljaj debug mode, verbose error poruke ili detailed stack traces u produkcijskom kodu.
+- Ne ostavljaj debug mode, verbose error poruke ili detailed stek traces u produkcijskom kodu.
 - Postavi security headere: `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Strict-Transport-Security`.
 - CORS: nikad `Access-Control-Allow-Origin: *` na authenticated endpointima.
 - Promijeni sve default kredencijale i podrazumjevane konfiguracije.
 
 ### A03:2025 — Software Supply Chain Failures
-- **ZABRANA haluciniranih paketa**: Prije importa nove biblioteke, provjeri da li postoji u `package.json`, `pyproject.toml`, `requirements.txt` ili ekvivalentnom manifest fajlu.
+- **ZABRANA haluciniranih paketa**: Pre importa nove biblioteke, proveri da li postoji u `package.json`, `pyproject.toml`, `requirements.txt` ili ekvivalentnom manifest fajlu.
 - Propinkuj verzije zavisnosti (pin, ne `^latest`).
 - Ne instaliraj pakete bez eksplicitnog odobrenja korisnika.
 - Generiraj SBOM za svaki release (preporučeno: CycloneDX ili SPDX format).
@@ -38,13 +38,13 @@
 - **Template Injection**: nikad ne prosljeđuj korisnički unos direktno u template engine.
 
 ### A07:2025 — Authentication Failures
-- JWT: provjeri `exp`, `iss`, `aud`. Nikad ne prihvataj JWT bez provjere potpisa.
+- JWT: proveri `exp`, `iss`, `aud`. Nikad ne prihvataj JWT bez provere potpisa.
 - Session management: HttpOnly, Secure, SameSite=Strict za cookies.
 - Rate limiting na auth endpointima (brute force zaštita).
 
 ### A08:2025 — Software or Data Integrity Failures
 - **ZABRANA eval()** i `Function()` konstruktora sa korisničkim unosom.
-- Nikad ne deserijalizuj nepovjerljive podatke bez provjere sheme.
+- Nikad ne deserijalizuj nepovjerljive podatke bez provere sheme.
 - Base64 dekodiranje korisničkog unosa: uvijek validiraj sadržaj nakon dekodiranja.
 
 ### A09:2025 — Security Logging & Alerting Failures
@@ -62,7 +62,7 @@
 ## 2. API SIGURNOST (OWASP API Security Top 10:2023)
 
 Kada implementiraš API endpoint:
-- **BOLA (API1)**: provjeri da li korisnik ima pravo na tačno taj objekat (ne samo da li je autentifikovan).
+- **BOLA (API1)**: proveri da li korisnik ima pravo na tačno taj objekat (ne samo da li je autentifikovan).
 - **BFLA (API5)**: admin funkcije moraju biti zaštićene po ulozi, ne samo po autentifikaciji.
 - **Unrestricted Resource Consumption (API4)**: implementiraj rate limiting i paginaciju.
 - **SSRF (API7)**: whitelist dozvoljena odredišta za server-side HTTP pozive.
@@ -72,10 +72,10 @@ Kada implementiraš API endpoint:
 
 ## 3. ZAVISNOSTI I LANAC SNABDEVANJA
 
-- Provjeri sve pakete u registrima (npm, PyPI) prije instalacije — ne instaliraj halucinovane pakete.
+- Proveri sve pakete u registrima (npm, PyPI) pre instalacije — ne instaliraj halucinovane pakete.
 - Koristiti `trivy fs --scanners vuln,misconfig,secret,license .` periodično za skeniranje.
 - Koristiti `bandit -r . -f json` za Python projekte u CI/CD-u.
-- Nikad ne ubacivati pakete sa jednim maintainerom ili bez commit-a u zadnjih 12 mj bez provjere.
+- Nikad ne ubacivati pakete sa jednim maintainerom ili bez commit-a u zadnjih 12 mj bez provere.
 
 ---
 
@@ -94,7 +94,7 @@ Kada implementiraš API endpoint:
 - Svaka async operacija mora imati timeout definisan.
 - Implementiraj retry mehanizam sa exponential backoff za mrežne pozive.
 - Implementiraj circuit breaker za kritične externe zavisnosti.
-- Strukturirani logovi: uvijek uključi correlation ID, timestamp, severity level i dovoljno konteksta za debugovanje bez pristupa produkciji.
+- Strukturisani logovi: uvijek uključi correlation ID, timestamp, severity level i dovoljno konteksta za debugovanje bez pristupa produkciji.
 
 ---
 
@@ -103,15 +103,15 @@ Kada implementiraš API endpoint:
 ### SonarQube "Sonar way for AI Code" Standardi (2025)
 AI-generisan kod mora ispunjavati **strože** uslove od ručno pisanog koda:
 - Zero novih Critical/High issue-a na novom kodu.
-- Sve security hotspot-e pregledane i razriješene.
+- Sve security hotspot-e pregledane i razrešene.
 - Test coverage ≥ 80% za novi kod.
 - Duplicirani kod ≤ 3%.
 
 ### Opšta pravila
-- **DRY**: prije kreiranja nove helper funkcije, pretraži bazu koda za slične. Ne duplikuj logiku.
+- **DRY**: pre kreiranja nove helper funkcije, pretraži bazu koda za slične. Ne duplikuj logiku.
 - **Single Responsibility**: jedna klasa/funkcija = jedna jasna odgovornost.
 - **SOLID**: ne krši princip otvoreno-zatvorene (Open/Closed), ne pravi god objects.
-- **Circular Dependencies**: uvijek provjeri da uvođenje novog modula ne kreira kružnu zavisnost.
+- **Circular Dependencies**: uvijek proveri da uvođenje novog modula ne kreira kružnu zavisnost.
 - Funkcije: maksimalno 40-50 linija koda, jedan nivo apstrakcije.
 - Docstring-ovi za sve javne module, klase i kompleksne funkcije. Dokumentuj ZAŠTO, ne samo ŠTA.
 
@@ -129,15 +129,15 @@ AI-generisan kod mora ispunjavati **strože** uslove od ručno pisanog koda:
 
 ## 8. PRISTUPAČNOST (WCAG 2.2 AA)
 
-Za sve web UI komponente, provjeri 9 novih WCAG 2.2 kriterija:
-- **2.4.11 Focus Not Obscured**: keyboard focus ne smije biti potpuno skriven sticky elementima (header, cookie bar).
+Za sve web UI komponente, proveri 9 novih WCAG 2.2 kriterija:
+- **2.4.11 Focus Not Obscured**: keyboard focus ne sme biti potpuno skriven sticky elementima (header, cookie bar).
 - **2.4.13 Focus Appearance**: focus indikator mora biti vidljiv (min contrast ratio 3:1, min offset 2px).
 - **2.5.7 Dragging Movements**: svaka drag akcija mora imati alternativu jednim klikom/tapom.
 - **2.5.8 Target Size**: interaktivni elementi (button, link) ≥ 24×24 CSS piksela.
 - **3.2.6 Consistent Help**: help mehanizmi (chat, FAQ) isti na svakoj stranici.
 - **3.3.7 Redundant Entry**: auto-popunjavanje prethodno unesenih podataka u istom procesu.
-- **3.3.8 Accessible Authentication**: auth procesi ne smiju zahtijevati samo kognitivne funkcije (puzzle, memorisanje).
-- Semantički HTML: koristi `<button>` umjesto `<div onclick>`, pravilne landmark elemente (`<main>`, `<nav>`, `<aside>`).
+- **3.3.8 Accessible Authentication**: auth procesi ne smeju zahtevati samo kognitivne funkcije (puzzle, memorisanje).
+- Semantički HTML: koristi `<button>` umesto `<div onclick>`, pravilne landmark elemente (`<main>`, `<nav>`, `<aside>`).
 - ARIA atributi samo kada HTML semantika nije dovoljna.
 
 ---
@@ -154,7 +154,7 @@ Za sve web UI komponente, provjeri 9 novih WCAG 2.2 kriterija:
 
 ## 10. OBSERVABILITY
 
-- Strukturirani logovi (JSON format): `timestamp`, `level`, `correlation_id`, `service`, `message`, `error`.
+- Strukturisani logovi (JSON format): `timestamp`, `level`, `correlation_id`, `service`, `message`, `error`.
 - Nikad ne loguj tajne, tokene ili PII.
 - Instrumentiraj ključne business metrike u Prometheus (ili ekvivalent).
 - Implementiraj distributed tracing (OpenTelemetry) za kritične tokove (auth, payment, checkout).
@@ -165,7 +165,7 @@ Za sve web UI komponente, provjeri 9 novih WCAG 2.2 kriterija:
 ## 11. AUDIT SESIJE
 
 Kada korisnik traži sveobuhvatnu reviziju koda, ne radi generičan review.
-Umjesto toga, pročitaj `prompts/pro_audit_prompt.md` i primijeni kompletni
+Umesto toga, pročitaj `prompts/pro_audit_prompt.md` i primeni kompletni
 višedimenzionalni protokol sa tri persone:
 1. **Senior Application Security Auditor** (OWASP Top 10:2025 + API Security Top 10:2023)
 2. **Principal Systems Architect** (dizajn, SOLID, tehnički dug, SonarQube AI gate)

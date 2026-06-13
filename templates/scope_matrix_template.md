@@ -1,5 +1,5 @@
 # Šablon: Scope & Artefakt Matrica
-# Kopirajte i popunite prije pokretanja analize
+# Kopirajte i popunite pre pokretanja analize
 
 ## Osnovna identifikacija
 
@@ -64,15 +64,15 @@ Označi koje dimenzije su u opsegu za ovu analizu:
 
 ---
 
-## Stack informacije
+## Stek informacije
 
-Popunite da biste omogućili alate prilagođene stack-u:
+Popunite da biste omogućili alate prilagođene steku:
 
 - **Backend jezik(ci)**: [Python / Node.js / Java / Go / Rust / C# / ...]
 - **Frontend framework**: [React / Vue / Angular / Next.js / Svelte / ...]
 - **Baza podataka**: [PostgreSQL / MySQL / MongoDB / Redis / ...]
 - **Deployment target**: [AWS / Azure / GCP / On-premise / Docker / K8s / ...]
 - **CI/CD platforma**: [GitHub Actions / GitLab CI / Jenkins / CircleCI / ...]
-- **Monitoring stack**: [Prometheus+Grafana / DataDog / NewRelic / CloudWatch / ...]
+- **Monitoring stek**: [Prometheus+Grafana / DataDog / NewRelic / CloudWatch / ...]
 - **API tip**: [REST / GraphQL / gRPC / WebSocket / ...]
 - **Auth mehanizam**: [JWT / OAuth2 / SAML / API Key / Session / ...]

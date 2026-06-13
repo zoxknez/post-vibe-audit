@@ -1,9 +1,9 @@
 # VAF Pro Audit Mega-Prompt v2.0
 # Vibe-Audit Framework — Kompletna višedimenzionalna analiza
 
-> **Upotreba**: Kopirajte CIJELI sadržaj ispod (od `---BEGIN PROMPT---` do `---END PROMPT---`) i nalijepite ga u AI interfejs zajedno sa kodom (ili `.vibe_audit/CURRENT_CONTEXT.md` fajlom generisanim skriptom).
+> **Upotreba**: Kopirajte CELI sadržaj ispod (od `---BEGIN PROMPT---` do `---END PROMPT---`) i nalepite ga u AI interfejs zajedno sa kodom (ili `.vibe_audit/CURRENT_CONTEXT.md` fajlom generisanim skriptom).
 
-> **Savjet za max efekt**: Koristite `scripts/vibe_audit_packer.py` da automatski spakovate kompletan kontekst repozitorijuma, a zatim učitajte `CURRENT_CONTEXT.md` uz ovaj prompt.
+> **Savet za max efekt**: Koristite `scripts/vibe_audit_packer.py` da automatski spakovate kompletan kontekst repozitorijuma, a zatim učitajte `CURRENT_CONTEXT.md` uz ovaj prompt.
 
 > **Referentni standardi ugrađeni u ovaj prompt**:
 > - OWASP Top 10:2025 (A01–A10, finalno izdanje)
@@ -33,7 +33,7 @@ Piši na srpskom (sr-RS).
   - `executed` — zaista pokrenuto/provereno sa jasnim dokazom
   - `inferred` — zaključeno iz koda, konfiguracije ili artefakata
   - `blocked` — nije moglo da se proveri zbog nedostajućih podataka/pristupa
-  - `not_applicable` — nije primenljivo na dati stack/aplikaciju
+  - `not_applicable` — nije primenljivo na dati stek/aplikaciju
 - Ne izmišljaj rezultate. Ne prikazuj "PASS" bez jasnog dokaza.
 - Koristi primarne izvore i zvaničnu dokumentaciju alata i standarda.
 - Kada koristiš OWASP Top 10, koristi **OWASP Top 10:2025** (A01:2025–A10:2025) i eksplicitno napiši koju verziju si koristio. Ako alat koji koristiš još mapira na starije izdanje, to jasno navedi.
@@ -104,7 +104,7 @@ Obradi sve dostavljene artefakte. Za svaki koji nedostaje, označi kao `unspecif
 | API10:2023 | Unsafe Consumption of APIs |
 
 **Zavisnosti i supply chain**:
-- Provjera za slopsquatting (halucinovani paketi koji odgovaraju registrovanim malicioznim)
+- Provera za slopsquatting (halucinovani paketi koji odgovaraju registrovanim malicioznim)
 - Nepropinkovane verzije, paketi bez maintainera, CVE skeniranje
 
 **Tajne / credential exposure**:
@@ -133,7 +133,7 @@ Obradi sve dostavljene artefakte. Za svaki koji nedostaje, označi kao `unspecif
 ### 6. Kvalitet koda (SonarQube "Sonar way for AI Code")
 - Primeni SonarQube standarde specifično za AI-generisan kod:
   - Zero new Critical/High issues na novom kodu
-  - Sve security hotspot-e pregledane i razriješene
+  - Sve security hotspot-e pregledane i razrešene
   - Coverage ≥ 80% na novom kodu
   - Duplicirani kod ≤ 3%
 - Čitljivost, konzistentnost imenovanja, veličina funkcija
@@ -148,31 +148,31 @@ Obradi sve dostavljene artefakte. Za svaki koji nedostaje, označi kao `unspecif
 - Artifact flow i deployment pipeline integritet
 
 ### 8. Observability (Prometheus / Grafana / OpenTelemetry)
-- Logovi: strukturirani, sa correlation ID, bez logovanja tajni
+- Logovi: strukturisani, sa correlation ID, bez logovanja tajni
 - Metrike: key business i tehnički KPI-ji pokriveni?
 - Tracing: distributed tracing za kritične tokove (checkout, payment, auth)?
 - Alerting: alert pravila za SLO breaches definisana?
 - Dashboard pokrivenost: postoji li dashboard za error spike detection?
 
 ### 9. Privatnost i usklađenost (GDPR)
-- Čl. 25: Privacy by Design i by Default — primjenjeno od početka dizajna?
+- Čl. 25: Privacy by Design i by Default — primenjeno od početka dizajna?
 - Čl. 30: Records of Processing Activities (RoPA) — postoji li evidencija obrade?
 - Čl. 32: Bezbednost obrade — enkripcija, pseudonimizacija, kontrola pristupa podacima
 - Data minimization i retention politike definisane?
 - Pravo na brisanje (right to erasure) implementirano?
 
 ### 10. UX i pristupačnost (WCAG 2.2 AA)
-Provjeri svih 9 novih kriterija iz WCAG 2.2:
+Proveri svih 9 novih kriterija iz WCAG 2.2:
 | Kriterij | Nivo | Opis |
 |---|:---:|---|
-| 2.4.11 Focus Not Obscured (Min) | AA | Focus indikatori ne smiju biti potpuno skriveni sticky elementima |
+| 2.4.11 Focus Not Obscured (Min) | AA | Focus indikatori ne smeju biti potpuno skriveni sticky elementima |
 | 2.4.13 Focus Appearance | AA | Focus indikator mora imati dovoljno kontrasta i veličinu |
 | 2.5.7 Dragging Movements | AA | Svaka drag akcija mora imati alternativu jednim prstom/klikom |
 | 2.5.8 Target Size (Min) | AA | Interaktivni elementi ≥ 24×24 CSS piksela |
 | 3.2.6 Consistent Help | A | Help mehanizmi isti na svakoj stranici |
-| 3.3.7 Redundant Entry | A | Prethodno unijeti podaci auto-popunjavaju |
-| 3.3.8 Accessible Authentication | AA | Auth ne zahtijeva samo kognitivne funkcije |
-| Uklonjeno: 4.1.1 Parsing | — | Uklonjeno iz WCAG 2.2 (browseri to rješavaju) |
+| 3.3.7 Redundant Entry | A | Prethodno uneti podaci auto-popunjavaju |
+| 3.3.8 Accessible Authentication | AA | Auth ne zahteva samo kognitivne funkcije |
+| Uklonjeno: 4.1.1 Parsing | — | Uklonjeno iz WCAG 2.2 (browseri to rešavaju) |
 
 Dodatno: UX friction, prazna stanja (empty states), error messages jasnoća, keyboard-only navigacija.
 
@@ -222,7 +222,7 @@ Svaki nalaz mora imati:
 
 ---
 
-## KOMANDE I TESTOVI (prilagodi stack-u)
+## KOMANDE I TESTOVI (prilagodi steku)
 
 ### JavaScript / TypeScript
 ```bash
@@ -236,7 +236,7 @@ sonar-scanner \
   -Dsonar.sources=. \
   -Dsonar.host.url=<url> \
   -Dsonar.token=<token>
-# Primjeni "Sonar way for AI Code" quality gate za AI-generisan kod
+# Primeni "Sonar way for AI Code" quality gate za AI-generisan kod
 ```
 
 ### Python — bezbednost (Bandit AST analiza)
@@ -388,7 +388,7 @@ Numerisana lista sa P0/P1 nalazima koji moraju biti sanirani pre produkcije.
 Ako postoje podaci o performansama, coverage ili error rate-ovima — prikaži kao ASCII bar chart ili tabelu.
 
 ### 9. Unspecified / Missing Data
-Lista svega što nije dostavljeno + šta bi konkretno povećalo sigurnost zaključaka.
+Lista svega što nije dostavljeno + šta bi konkretno povećalo bezbednost zaključaka.
 
 ### 10. Rizici koje nije bilo moguće verifikovati
 Svaki rizik koji ostaje otvoren zbog nedostajućih artefakata.
