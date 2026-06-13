@@ -1,0 +1,67 @@
+# Vibe-Audit Framework — .gitignore
+
+# Auto-generisani context bundle (regeneriše se skriptom)
+.vibe_audit/CURRENT_CONTEXT.md
+
+# ADR-ovi se ČUVAJU u gitu — ne ignorišemo ih
+# .vibe_audit/adrs/  ← NAMJERNO UKLJUČENI
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+coverage-html/
+*.cover
+.coverage
+coverage.xml
+coverage.json
+
+# Node.js
+node_modules/
+.next/
+out/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Lokalne tajne — NIKAD u git!
+.env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+
+# Test output
+pytest.xml
+bandit.json
+trivy-fs.json
+trivy-image.json
+zap-*.html
+locust-report.html
+locust-stats.json
+locust-csv*
+jmeter-report-dir/
+results.jtl
+eslint-results.json
+lighthouse-report*

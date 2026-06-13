@@ -1,0 +1,83 @@
+# Vibe-Audit Framework (VAF) v2.0
+
+Multi-dimensional software audit framework for AI-assisted ("vibe coded") applications.
+Enables any LLM (Gemini, Claude, GPT-4o, Cursor, Cline) to perform a complete, multi-persona
+post-vibe-coding audit without tunnel vision.
+
+**Reference Standards (all current/latest as of 2025)**:
+- OWASP Top 10:2025 (A01–A10, final release)
+- OWASP API Security Top 10:2023 (API1–API10)
+- OWASP ASVS (Application Security Verification Standard)
+- WCAG 2.2 AA (W3C Recommendation, 13 guidelines, 78 success criteria)
+- GDPR Art.25 (Privacy by Design), Art.30 (RoPA), Art.32 (Security of Processing)
+- SonarQube "Sonar way for AI Code" quality gate (2025)
+- Trivy 0.50+ (`--scanners vuln,misconfig,secret,license`)
+- Bandit AST analysis for Python
+- Locust headless CLI (`-u`, `-r`, `--run-time`, `--html`, `--json-file`)
+- OWASP ZAP (baseline, full, api-scan)
+
+---
+
+## Directory Structure
+
+```
+analizaprojekta/
+├── .cursorrules                  ← AI coding rules (OWASP:2025, WCAG 2.2, GDPR)
+├── llms.txt                      ← This file — LLM navigation roadmap
+├── README.md                     ← Full documentation (SR + EN)
+├── prompts/
+│   └── pro_audit_prompt.md       ← CORE: Complete Pro Mega-Prompt (copy-paste ready)
+├── scripts/
+│   └── vibe_audit_packer.py      ← Auto-bundles project context for LLM audit
+├── templates/
+│   ├── adr_template.md           ← Architecture Decision Record template
+│   ├── scope_matrix_template.md  ← Pre-audit artifact inventory template
+│   └── finding_template.md       ← Standardized finding documentation template
+└── .vibe_audit/                  ← Generated output directory (git-ignored)
+    ├── CURRENT_CONTEXT.md        ← AI-ready context bundle (auto-generated)
+    └── adrs/                     ← Architecture Decision Records archive
+```
+
+---
+
+## Key Files
+
+- [prompts/pro_audit_prompt.md](file:///d:/ProjektiApp/analizaprojekta/prompts/pro_audit_prompt.md)
+  THE MAIN DELIVERABLE. Copy the content between `---BEGIN PROMPT---` and `---END PROMPT---`
+  and paste it into any LLM together with your codebase or CURRENT_CONTEXT.md.
+
+- [scripts/vibe_audit_packer.py](file:///d:/ProjektiApp/analizaprojekta/scripts/vibe_audit_packer.py)
+  Run this after every vibe coding session. Generates `.vibe_audit/CURRENT_CONTEXT.md`
+  containing the file tree, git diffs, dependency manifests, ADRs, and the Pro Mega-Prompt.
+
+- [.cursorrules](file:///d:/ProjektiApp/analizaprojekta/.cursorrules)
+  Project-level enforcement rules for AI editors. Covers all OWASP:2025 categories,
+  API Security Top 10:2023, WCAG 2.2 AA, GDPR Čl.25/30/32, SonarQube AI Code gate.
+
+- [templates/scope_matrix_template.md](file:///d:/ProjektiApp/analizaprojekta/templates/scope_matrix_template.md)
+  Fill out before starting any audit to inventory available artifacts.
+
+- [templates/finding_template.md](file:///d:/ProjektiApp/analizaprojekta/templates/finding_template.md)
+  Standardized finding documentation with severity, priority, confidence, OWASP mapping.
+
+- [templates/adr_template.md](file:///d:/ProjektiApp/analizaprojekta/templates/adr_template.md)
+  Architecture Decision Record template. Store completed ADRs in `.vibe_audit/adrs/`.
+
+---
+
+## Workflow
+
+1. **Before coding**: Copy `.cursorrules`, `llms.txt`, all templates and scripts into your target project root.
+2. **After vibe coding session**: Run `python scripts/vibe_audit_packer.py`
+3. **To audit**: Copy `.vibe_audit/CURRENT_CONTEXT.md` content + `prompts/pro_audit_prompt.md` into any LLM.
+4. **To record decisions**: Use `templates/adr_template.md` → save in `.vibe_audit/adrs/`.
+
+---
+
+## AI Interaction Guidelines
+
+When an AI agent is coding in this repository:
+- Follow ALL rules in `.cursorrules` during code generation.
+- When asked to audit, apply the full 3-persona protocol from `prompts/pro_audit_prompt.md`.
+- Document all significant architectural decisions as ADRs to maintain project long-term memory.
+- Never skip the scope matrix — clearly state what is `executed`, `inferred`, `blocked`, or `not_applicable`.
