@@ -247,7 +247,7 @@ def detect_stack(root_dir: Path) -> dict:
 def generate_scope_matrix(root_dir: Path, git_info: dict, stack: dict) -> str:
     """Generiše scope matricu dostupnih artefakata."""
     def check(condition: bool) -> str:
-        return '[OK] available' if condition else '[--] unspecified'
+        return '[OK] available' if condition else '[-] unspecified'
 
     lines = ["## 2. Scope & Artefakt Matrica\n"]
     lines.append("| # | Kategorija artefakta | Status | Napomena |")
@@ -526,7 +526,7 @@ def main():
         sys.exit(1)
 
     print("[VAF] =================================================")
-    print("[VAF]  Vibe-Audit Framework v2.0 -- Context Packer")
+    print("[VAF]  Vibe-Audit Framework v2.0 - Context Packer")
     print("[VAF] =================================================")
     print(f"[VAF] Root direktorij : {root_dir}")
     print(f"[VAF] Modo analize    : {args.mode}")
