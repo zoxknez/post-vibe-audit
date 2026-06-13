@@ -4,15 +4,15 @@
 
 **Sveobuhvatni okvir za višedimenzionalnu reviziju softvera nastalog vibe kodiranjem.**
 
-VAF omogućava svakom AI modelu (Gemini, Claude, ChatGPT, Cursor, Cline) da obavi kompletnu, dokazima potkrijepljenu analizu aplikacije iz tri nezavisne perspektive — bez "tunelskog vida". Sadrži Pro Mega-Prompt sa ugrađenim standardima OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA i GDPR Čl.25/30/32.
+VAF omogućava svakom AI modelu (Gemini, Claude, ChatGPT, Cursor, Cline) da obavi kompletnu, dokazima potkrijepljenu analizu aplikacije iz tri nezavisne perspektive - bez "tunelskog vida". Sadrži Pro Mega-Prompt sa ugrađenim standardima OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA i GDPR Čl.25/30/32.
 
 ---
 
 ## Zašto VAF?
 
-Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicionalno razvojno trenje: peer review, unit testove, dokumentovanje arhitekture. VAF veštački ponovo uvodi to trenje u fazi verifikacije — strukturisanim promptovanjem, automatizovanim pakovanjem konteksta i standardizovanim šablonima za nalaze.
+Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicionalno razvojno trenje: peer review, unit testove, dokumentovanje arhitekture. VAF veštački ponovo uvodi to trenje u fazi verifikacije - strukturisanim promptovanjem, automatizovanim pakovanjem konteksta i standardizovanim šablonima za nalaze.
 
-**Ključni problem koji VAF rešava**: LLM-ovi pate od "tunelskog vida" — kada dobiju generičan zahtev "proveri kod", fokusiraju se na jednu dimenziju (obično sintaksu) i ignorišu bezbednost, arhitekturu i poslovnu logiku. VAF primorava model na tri nezavisne persone i samokorekciju.
+**Ključni problem koji VAF rešava**: LLM-ovi pate od "tunelskog vida" - kada dobiju generičan zahtev "proveri kod", fokusiraju se na jednu dimenziju (obično sintaksu) i ignorišu bezbednost, arhitekturu i poslovnu logiku. VAF primorava model na tri nezavisne persone i samokorekciju.
 
 ---
 
@@ -24,7 +24,7 @@ Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicio
 ├── llms.txt                      ← LLM mapa projekta
 ├── README.md                     ← Ova dokumentacija
 ├── prompts/
-│   └── pro_audit_prompt.md       ← ⭐ GLAVNI DELIVERABLE — Pro Mega-Prompt
+│   └── pro_audit_prompt.md       ← ⭐ GLAVNI DELIVERABLE - Pro Mega-Prompt
 ├── scripts/
 │   └── vibe_audit_packer.py      ← Skripta za automatsko pakovanje konteksta
 ├── templates/
@@ -64,11 +64,11 @@ python scripts/vibe_audit_packer.py --path /putanja/do/projekta
 
 ### Korak 3: Pokrenite audit
 Prevucite `.vibe_audit/CURRENT_CONTEXT.md` u:
-- **Claude 3.5/4.x** — povucite fajl direktno u chat (preporučeno za dugi kontekst)
-- **Gemini 1.5/2.x Pro** — uploadujte fajl
-- **ChatGPT-4o** — kopirajte sadržaj ili uploadujte
-- **Cursor Agent** — `@codebase` + sadržaj fajla
-- **Cline** — pokrenite novu sesiju i priložite fajl
+- **Claude 3.5/4.x** - povucite fajl direktno u chat (preporučeno za dugi kontekst)
+- **Gemini 1.5/2.x Pro** - uploadujte fajl
+- **ChatGPT-4o** - kopirajte sadržaj ili uploadujte
+- **Cursor Agent** - `@codebase` + sadržaj fajla
+- **Cline** - pokrenite novu sesiju i priložite fajl
 
 ---
 
@@ -126,7 +126,7 @@ AI primenjuje protokol sa tri persone i isporučuje:
 
 ---
 
-## Status Nalaza — Kodovi
+## Status Nalaza - Kodovi
 
 | Status | Značenje |
 |---|---|
@@ -209,7 +209,7 @@ jobs:
 
 **Comprehensive multi-dimensional software audit framework for AI-assisted ("vibe coded") applications.**
 
-VAF enables any LLM (Gemini, Claude, ChatGPT, Cursor, Cline) to perform a complete, evidence-based audit from three independent perspectives — eliminating tunnel vision. Includes a Pro Mega-Prompt with embedded OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA, and GDPR Art.25/30/32 standards.
+VAF enables any LLM (Gemini, Claude, ChatGPT, Cursor, Cline) to perform a complete, evidence-based audit from three independent perspectives - eliminating tunnel vision. Includes a Pro Mega-Prompt with embedded OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA, and GDPR Art.25/30/32 standards.
 
 ---
 
@@ -245,10 +245,10 @@ The AI will automatically:
 
 ## Embedded Standards (all current as of 2025)
 
-- **OWASP Top 10:2025** — A01 Broken Access Control through A10 Mishandling of Exceptional Conditions
-- **OWASP API Security Top 10:2023** — BOLA, Broken Auth, BFLA, SSRF, Improper Inventory Management
-- **WCAG 2.2 AA** — All 9 new criteria (2.4.11, 2.4.13, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8)
-- **GDPR** — Art.25 Privacy by Design, Art.30 RoPA, Art.32 Security of Processing
-- **SonarQube "Sonar way for AI Code"** — Zero new Critical/High, ≥80% coverage, ≤3% duplication
-- **Trivy 0.50+** — `--scanners vuln,misconfig,secret,license`
-- **Locust headless** — `-u`, `-r`, `--run-time`, `--html`, `--json-file`, `--csv`
+- **OWASP Top 10:2025** - A01 Broken Access Control through A10 Mishandling of Exceptional Conditions
+- **OWASP API Security Top 10:2023** - BOLA, Broken Auth, BFLA, SSRF, Improper Inventory Management
+- **WCAG 2.2 AA** - All 9 new criteria (2.4.11, 2.4.13, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8)
+- **GDPR** - Art.25 Privacy by Design, Art.30 RoPA, Art.32 Security of Processing
+- **SonarQube "Sonar way for AI Code"** - Zero new Critical/High, ≥80% coverage, ≤3% duplication
+- **Trivy 0.50+** - `--scanners vuln,misconfig,secret,license`
+- **Locust headless** - `-u`, `-r`, `--run-time`, `--html`, `--json-file`, `--csv`
