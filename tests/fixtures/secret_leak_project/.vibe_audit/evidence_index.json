@@ -1,0 +1,20 @@
+{
+  "bundle_sha256": "2cb54f1b9bf1dd40238673483defbc8e949672e6069cc83fa836762a0d65d148",
+  "total_files": 1,
+  "files": [
+    {
+      "path": "src/config.py",
+      "sha256": "e6f56c977871c1b6d4d46afc027e792d364eeb6df291d4882e5d59cfba2ecc44",
+      "size_bytes": 404,
+      "line_count": 6,
+      "key_lines": {
+        "1": "# Configuration containing fake API keys for redaction testing",
+        "2": "OPENAI_API_KEY = \"sk-***REDACTED***\"",
+        "3": "GITHUB_TOKEN = \"ghp_***REDACTED***\"",
+        "4": "DATABASE_URL = \"***REDACTED_DB_URL***\"",
+        "5": "AWS_ACCESS_KEY = \"AKIA***REDACTED***\"",
+        "6": "JWT_TOKEN = \"Bearer eyJ***REDACTED***\""
+      }
+    }
+  ]
+}

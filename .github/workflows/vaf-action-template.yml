@@ -1,0 +1,95 @@
+name: VAF Audit Security Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  vaf-audit:
+    name: Vibe-Audit Framework (VAF) Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # Required to upload SARIF results
+      pull-requests: write   # Required to post comments on PRs
+      contents: read         # Required to checkout repo
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Fetch all history for git diff / PR review features
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install post-vibe-audit
+        # Install scanners that run under Python environment
+        pip install semgrep bandit
+
+    - name: Run VAF PR Review
+      id: pr_review
+      run: |
+        vaf pr-review --base origin/${{ github.base_ref }} --head HEAD > pr_risk_report.md
+        cat pr_risk_report.md
+
+    - name: Run VAF Pack
+      run: |
+        vaf pack --strategy security-first
+
+    - name: Run VAF Scan
+      continue-on-error: true # Don't block report generation if scan fails
+      run: |
+        vaf scan --tools bandit,semgrep --fail-on-high
+
+    - name: Generate Reports (SARIF & Markdown)
+      run: |
+        vaf report --format sarif,markdown
+
+    - name: Upload SARIF report to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: .vibe_audit/vaf.sarif
+        category: VAF-Security-Scan
+
+    - name: Upload Context Bundle as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: vaf-context-bundle
+        path: .vibe_audit/CURRENT_CONTEXT.md
+
+    - name: Comment PR with VAF Security Verdict
+      uses: actions/github-script@v7
+      if: always()
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          let reportContent = "";
+          try {
+            reportContent = fs.readFileSync('.vibe_audit/scan_summary.md', 'utf8');
+          } catch (err) {
+            reportContent = "### VAF Scan Failed\nUnable to read scan_summary.md.";
+          }
+          
+          let prReviewContent = "";
+          try {
+            prReviewContent = fs.readFileSync('pr_risk_report.md', 'utf8');
+          } catch (err) {
+            prReviewContent = "";
+          }
+
+          const commentBody = `## 🛡️ VAF Audit Results\n\n${reportContent}\n\n${prReviewContent}`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue().number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: commentBody
+          });

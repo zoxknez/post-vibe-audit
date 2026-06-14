@@ -65,3 +65,10 @@ jmeter-report-dir/
 results.jtl
 eslint-results.json
 lighthouse-report*
+
+# VAF scan outputs and evidence
+.vibe_audit/scans/
+.vibe_audit/evidence_index.json
+.vibe_audit/secrets_report.json
+.vibe_audit/history/
+# Napomena: findings.json i vaf.sarif se NE ignorišu jer su korisni za CI/CD i Code Scanning integration.

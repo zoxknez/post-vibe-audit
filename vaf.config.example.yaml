@@ -1,0 +1,117 @@
+# vaf.config.yaml — Konfiguracija za Vibe-Audit Framework v3.0
+# Kopirajte u koren vašeg projekta i prilagodite prema potrebama.
+#
+# Dokumentacija: https://github.com/zoxknez/post-vibe-audit
+# ------------------------------------------------------------------
+
+version: 1
+
+# Jezik izveštaja (sr-Latn = srpski latinica, en = engleski)
+language: sr-Latn
+
+# Podrazumevani mod: deep (1-3 dana) ili quick (1-2h)
+mode: deep
+
+# Podrazumevana strategija pakovanja:
+# - deep: sve fajlove do limita, sortirano po važnosti
+# - quick: samo kritični fajlovi (auth, api, config)
+# - security-first: samo security-relevantni fajlovi
+# - changed-files: samo git diff + direktno uvezeni fajlovi
+# - architecture: README, manifests, interfaces, services
+# strategy: deep
+
+# Redakcija tajni pre slanja LLM-u (preporučeno: true)
+enable_redaction: true
+
+# ─── Limiti ───────────────────────────────────────────────────────────────────
+
+limits:
+  # Maksimalan ukupan broj fajlova u bundle-u
+  max_total_files: 300
+
+  # Maksimalna veličina jednog fajla (KB)
+  max_file_size_kb: 200
+
+  # Procenjeni max token budget za LLM
+  max_total_tokens: 150000
+
+# ─── Include / Exclude ────────────────────────────────────────────────────────
+
+# Opciono: override podrazumevanih ekstenzija
+# include:
+#   extensions:
+#     - .py
+#     - .ts
+#     - .tsx
+#     - .sql
+#     - .prisma
+#     - .yaml
+#     - .md
+
+# Dodatni direktorijumi za isključivanje (mergeuju se sa defaults)
+exclude:
+  dirs:
+    - node_modules
+    - .git
+    - .next
+    - dist
+    - build
+    - coverage
+    - .vibe_audit
+  files:
+    - .env
+    - .env.local
+    - .env.production
+    - .env.staging
+    - package-lock.json
+    - yarn.lock
+    - pnpm-lock.yaml
+
+# ─── Standardi ────────────────────────────────────────────────────────────────
+
+standards:
+  web:
+    - OWASP_TOP_10_2025
+    - OWASP_ASVS_5
+    - OWASP_API_TOP_10_2023
+  ai:
+    - OWASP_LLM_TOP_10_2025
+    - OWASP_AGENTIC_TOP_10_2026
+  supply_chain:
+    - SLSA
+    - OpenSSF_SCORECARD
+    - SBOM
+  privacy:
+    - GDPR
+    # - CCPA  # Opciono
+
+# ─── Output ───────────────────────────────────────────────────────────────────
+
+output:
+  formats:
+    - markdown
+    - json
+    # - sarif  # Uncomment za GitHub Code Scanning
+  directory: .vibe_audit
+
+# ─── Skeneri koji se automatski pokreću ───────────────────────────────────────
+
+enabled_scanners:
+  - trivy
+  - bandit      # samo za Python projekte
+  - semgrep
+  - gitleaks
+  # - eslint    # zahteva npm setup
+  # - lighthouse # zahteva Chrome
+
+# ─── Security gate-ovi ────────────────────────────────────────────────────────
+
+gates:
+  # lokalni dev — fail samo na Critical
+  local: critical
+  # PR merge — fail na High
+  pr: high
+  # staging deploy — fail na High
+  staging: high
+  # production deploy — fail na Medium
+  production: medium

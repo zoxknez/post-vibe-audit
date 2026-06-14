@@ -1,8 +1,8 @@
-# Cursor AI Rules of Engagement — Vibe-Audit Framework v2.0
+# Cursor AI Rules of Engagement — Vibe-Audit Framework v3.0
 # Primenjuje se automatski za sve Cursor, Cline, Copilot i kompatibilne AI asistente.
 # Referentni standardi: OWASP Top 10:2025 | OWASP API Security Top 10:2023 |
 #   WCAG 2.2 AA | GDPR Čl.25/30/32 | SonarQube "Sonar way for AI Code" (2025) |
-#   Trivy 0.50+ | Bandit AST | ASVS
+#   OWASP LLM Top 10:2025 | OWASP Agentic Top 10:2026 | Trivy 0.50+ | Bandit AST | ASVS 5.0
 
 ---
 
@@ -166,10 +166,11 @@ Za sve web UI komponente, proveri 9 novih WCAG 2.2 kriterija:
 
 Kada korisnik traži sveobuhvatnu reviziju koda, ne radi generičan review.
 Umesto toga, pročitaj `prompts/pro_audit_prompt.md` i primeni kompletni
-višedimenzionalni protokol sa tri persone:
-1. **Senior Application Security Auditor** (OWASP Top 10:2025 + API Security Top 10:2023)
+višedimenzionalni protokol sa četiri persone:
+1. **Senior Application Security Auditor** (OWASP Top 10:2025 + API Security Top 10:2023 + ASVS 5.0)
 2. **Principal Systems Architect** (dizajn, SOLID, tehnički dug, SonarQube AI gate)
 3. **QA & Business Logic Analyst** (runtime greške, edge cases, WCAG 2.2, GDPR)
+4. **AI & Agentic Systems Auditor** (OWASP LLM Top 10:2025 + OWASP Agentic Top 10:2026, least privilege, tool boundaries)
 
 Sve nalaze popiši u matrici iz `templates/finding_template.md`.
 Koristi `templates/scope_matrix_template.md` da dokumentuješ šta je analizirano, a šta nije.

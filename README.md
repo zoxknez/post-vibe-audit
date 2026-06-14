@@ -1,18 +1,23 @@
-# Vibe-Audit Framework (VAF) v2.0 🛡️🤖
+# Vibe-Audit Framework (VAF) v3.0 🛡️🤖
 
 [English version below](#english-version-)
 
-**Sveobuhvatni okvir za višedimenzionalnu reviziju softvera nastalog vibe kodiranjem.**
+**Sveobuhvatni DevSecOps okvir i CLI alat za višedimenzionalnu reviziju softvera nastalog AI-potpomognutim ("vibe") kodiranjem.**
 
-VAF omogućava svakom AI modelu (Gemini, Claude, ChatGPT, Cursor, Cline) da obavi kompletnu, dokazima potkrijepljenu analizu aplikacije iz tri nezavisne perspektive - bez "tunelskog vida". Sadrži Pro Mega-Prompt sa ugrađenim standardima OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA i GDPR Čl.25/30/32.
+VAF v3.0 transformiše proces provere iz običnog prompt-skript šablona u ozbiljan bezbednosni alat integrisan u vaš CI/CD pipeline. Pomaže AI modelima (Gemini, Claude, ChatGPT, Cursor, Cline) da obave kompletnu, dokazima potkrijepljenu proveru aplikacije iz četiri nezavisne perspektive kako bi se sprečio LLM "tunelski vid".
 
 ---
 
-## Zašto VAF?
+## Ključne Novine u v3.0
 
-Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicionalno razvojno trenje: peer review, unit testove, dokumentovanje arhitekture. VAF veštački ponovo uvodi to trenje u fazi verifikacije - strukturisanim promptovanjem, automatizovanim pakovanjem konteksta i standardizovanim šablonima za nalaze.
-
-**Ključni problem koji VAF rešava**: LLM-ovi pate od "tunelskog vida" - kada dobiju generičan zahtev "proveri kod", fokusiraju se na jednu dimenziju (obično sintaksu) i ignorišu bezbednost, arhitekturu i poslovnu logiku. VAF primorava model na tri nezavisne persone i samokorekciju.
+- **Jednostavan CLI Alat**: Instalirajte ga sa `pip install -e .` i upravljajte auditom preko komande `vaf`.
+- **Konfigurabilnost (`vaf.config.yaml`)**: Prilagodite limite, dozvoljene fajlove, ignorisane direktorijume, bezbednosne gate-ove i aktivne skenere.
+- **Secrets Firewall (Redakcija Tajni)**: Automatski detektuje i uklanja API ključeve, JWT tokene, lozinke i druge tajne pre pakovanja koda. Generiše bezbedan `secrets_report.json` bez curenja stvarnih vrednosti.
+- **Tamper-Evident Index (`evidence_index.json`)**: Izračunava SHA-256 heševe za svaki uključeni fajl kako bi se olakšala post-audit verifikacija.
+- **Anti-Halucinaciona Verifikacija (`vaf verify`)**: Proverava LLM izveštaj i potvrđuje da li svi referencirani fajlovi i linije koda zaista postoje u evidence indeksu.
+- **Integracija Alata (`vaf scan`)**: Automatski pokreće i normalizuje rezultate eksternih skenera poput Trivy, Bandit, Semgrep i Gitleaks.
+- **Multi-Format Reports (`vaf report`)**: Generiše izveštaje u Markdown, JSON i standardnom SARIF 2.1.0 formatu za direktan upload na GitHub Code Scanning.
+- **PR Review Mode (`vaf pr-review`)**: Analizira git diff i pruža procenu rizika za touchovane oblasti pre merge-ovanja.
 
 ---
 
@@ -20,235 +25,193 @@ Kada "vibe kodirate" (brzo generišete aplikacije kroz AI), zaobilazite tradicio
 
 ```
 .
-├── .cursorrules                  ← Pravila za AI editore (Cursor, Cline, Copilot)
-├── llms.txt                      ← LLM mapa projekta
+├── .github/workflows/
+│   ├── ci.yml                    ← GitHub Actions CI konfiguracija
+│   └── vaf-action-template.yml   ← Šablon za PR VAF bezbednosnu proveru
+├── .cursorrules                  ← Pravila za AI asistente (Cursor, Cline) ažurirana za v3.0
+├── llms.txt                      ← LLM mapa projekta za lakše razumevanje steka
+├── pyproject.toml                ← Python konfiguracija pakovanja, Ruff i Mypy pravila
 ├── README.md                     ← Ova dokumentacija
+├── vaf.config.example.yaml       ← Primer konfiguracije projekta
 ├── prompts/
-│   └── pro_audit_prompt.md       ← ⭐ GLAVNI DELIVERABLE - Pro Mega-Prompt
+│   └── pro_audit_prompt.md       ← ⭐ Pro Mega-Prompt v3.0 (OWASP 2025/2026, Persona 4)
 ├── scripts/
-│   └── vibe_audit_packer.py      ← Skripta za automatsko pakovanje konteksta
-├── templates/
-│   ├── adr_template.md           ← Šablon za Architecture Decision Records
-│   ├── scope_matrix_template.md  ← Šablon za inventar artefakata
-│   └── finding_template.md       ← Šablon za dokumentovanje nalaza
-└── .vibe_audit/                  ← Generisani output (gitignore!)
-    ├── CURRENT_CONTEXT.md        ← LLM-ready paket (auto-generisano)
-    └── adrs/                     ← Arhiva ADR-ova
+│   └── vibe_audit_packer.py      ← Deprecated wrapper skripta radi kompatibilnosti
+├── src/vaf/                      ← Izvorni kod alata
+│   ├── cli.py                    ← CLI argumenti i ruter komandi
+│   ├── config.py                 ← Učitavanje i validacija vaf.config.yaml
+│   ├── packer.py                 ← Glavna logika za pakovanje koda
+│   ├── redaction.py              ← Secrets Firewall i detekcija entropije
+│   ├── evidence.py               ← Generisanje evidence indeksa
+│   ├── verifier.py               ← Anti-halucinacioni verifikator
+│   ├── pr_review.py              ← PR diff i risk analizator
+│   ├── reporters/                ← Markdown, JSON i SARIF generatori
+│   └── scanners/                 ← Integracije za Trivy, Bandit, Semgrep, Gitleaks
+├── templates/                    ← Šabloni za ručne nalaze, ADR-ove i matrice
+└── tests/                        ← Unit i integracioni testovi
 ```
 
 ---
 
-## Brzo Pokretanje (3 koraka)
+## Instalacija
 
-### Korak 1: Kopirajte u vaš projekat
-```bash
-# Kopirajte sledeće fajlove u koren vašeg projekta:
-.cursorrules
-llms.txt
-prompts/pro_audit_prompt.md
-scripts/vibe_audit_packer.py
-templates/
-```
-
-### Korak 2: Pokrenite pakovanje konteksta
-```bash
-# Dubinska analiza (preporučeno)
-python scripts/vibe_audit_packer.py
-
-# Brza provera
-python scripts/vibe_audit_packer.py --mode quick
-
-# Za drugi projekat
-python scripts/vibe_audit_packer.py --path /putanja/do/projekta
-```
-
-### Korak 3: Pokrenite audit
-Prevucite `.vibe_audit/CURRENT_CONTEXT.md` u:
-- **Claude 3.5/4.x** - povucite fajl direktno u chat (preporučeno za dugi kontekst)
-- **Gemini 1.5/2.x Pro** - uploadujte fajl
-- **ChatGPT-4o** - kopirajte sadržaj ili uploadujte
-- **Cursor Agent** - `@codebase` + sadržaj fajla
-- **Cline** - pokrenite novu sesiju i priložite fajl
-
----
-
-## Šta Dobijate kao Izlaz
-
-AI primenjuje protokol sa tri persone i isporučuje:
-
-| Sekcija | Sadržaj |
-|---|---|
-| **Executive Summary** | 3 rečenice: šta je provereno, najveći rizici, go/no-go |
-| **Scope & Artefakt Matrica** | Šta je dostavljeno, šta je `unspecified` |
-| **Finding Matrix** | Svi nalazi po domenima, prioritetima i severity |
-| **Detaljni Nalazi** | ID, dokaz, OWASP mapiranje, reprodukcija, fix, primer koda |
-| **Mermaid Dijagram** | Vizualizacija toka analize |
-| **Top 5 Prioriteta** | P0/P1 nalazi koje treba popraviti pre produkcije |
-| **Metrički Grafici** | p95 latencija, error rate, coverage (ako postoje podaci) |
-| **Unspecified Data** | Šta nedostaje i šta bi povećalo bezbednost zaključaka |
-| **Go/No-Go Verdict** | `go` / `conditional go` / `no-go` sa obrazloženjem |
-
----
-
-## Ugrađeni Standardi
-
-### Bezbednost
-| Standard | Verzija | Opis |
-|---|---|---|
-| OWASP Top 10 | **2025** (A01–A10) | Novi: A03 Supply Chain Failures, A10 Exceptional Conditions |
-| OWASP API Security | **2023** (API1–API10) | BOLA, BFLA, Unrestricted Consumption, SSRF |
-| OWASP ASVS | 4.x | Tehničke security kontrole |
-| Trivy | 0.50+ | `--scanners vuln,misconfig,secret,license` |
-| Bandit | 1.7+ | AST analiza Python koda |
-| OWASP ZAP | Stable | Baseline, full-scan, api-scan (OpenAPI, GraphQL) |
-
-### Kvalitet i Arhitektura
-| Standard/Alat | Opis |
-|---|---|
-| SonarQube "Sonar way for AI Code" | AI-specifični quality gate: 0 novih Critical/High, ≥80% coverage, ≤3% duplikat |
-| ESLint CLI | `--format json` za CI integraciju |
-| pytest + pytest-cov | JUnit XML + HTML/XML/JSON coverage |
-| JaCoCo Maven | `mvn test jacoco:report` / `mvn verify` |
-
-### Performanse
-| Alat | Komanda |
-|---|---|
-| Locust | `--headless -u N -r R --run-time Xm --html --json-file --csv` |
-| JMeter | `-n -t test.jmx -l results.jtl -e -o report-dir/` |
-| Prometheus + Grafana | p50/p95/p99, throughput, error rate, saturation |
-
-### Pristupačnost i Privacy
-| Standard | Verzija | Ključni kriteriji |
-|---|---|---|
-| WCAG | **2.2 AA** | 9 novih kriterija: 2.4.11, 2.4.13, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8 |
-| Lighthouse | Latest | `--only-categories=accessibility,performance` |
-| GDPR | EU 2016/679 | Čl.25 Privacy by Design, Čl.30 RoPA, Čl.32 Security of Processing |
-
----
-
-## Status Nalaza - Kodovi
-
-| Status | Značenje |
-|---|---|
-| `executed` | Provera je zaista izvršena, postoji konkretan dokaz |
-| `inferred` | Zaključeno iz koda/konfiguracije/artefakata bez direktnog izvršavanja |
-| `blocked` | Nije moglo biti provereno zbog nedostajućih podataka/pristupa |
-| `not_applicable` | Nije primenjivo na ovaj stek/aplikaciju |
-
----
-
-## Korišćenje Architecture Decision Records (ADR)
-
-Svaka važna arhitektonska odluka treba biti dokumentovana:
+Klonirajte repozitorijum i instalirajte paket u lokalnom okruženju:
 
 ```bash
-# 1. Kopirajte šablon
-cp templates/adr_template.md .vibe_audit/adrs/0001-my-decision.md
+# Kreiranje i aktiviranje virtuelnog okruženja
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate    # Linux/macOS
 
-# 2. Popunite šablon
-# 3. Kod sledećeg pokretanja packer-a, ADR će biti automatski uključen u kontekst
-python scripts/vibe_audit_packer.py
+# Instalacija paketa u editable modu sa dev alatima
+pip install -e ".[dev]"
 ```
-
-Primjeri ADR naslova:
-- `0001-prevent-sql-injection-parameterized-queries.md`
-- `0002-jwt-validation-server-side-only.md`
-- `0003-rate-limiting-auth-endpoints.md`
-- `0004-gdpr-data-retention-90-days.md`
 
 ---
 
-## Integrisanje u CI/CD Pipeline
+## Komandni Vodič (CLI)
 
-Primjer GitHub Actions workflow-a:
+### 1. Pakovanje konteksta (`vaf pack`)
+Prikuplja fajlove projekta, detektuje tehnološki stek, generiše stablo direktorijuma i kreira bezbedan `CURRENT_CONTEXT.md` bundle.
 
-```yaml
-name: VAF Audit
+```bash
+# Podrazumevano pakovanje celog projekta (deep mode)
+vaf pack
 
-on:
-  pull_request:
-    branches: [main, develop]
+# Brzo pakovanje (quick mode) - fokusira se samo na kritične fajlove
+vaf pack --mode quick
 
-jobs:
-  vibe-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+# Pakovanje sa specifičnom strategijom (npr. samo fajlovi vezani za bezbednost)
+vaf pack --strategy security-first
 
-      - name: Trivy Security Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          scanners: 'vuln,secret,misconfig'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-      - name: Generate VAF Context Bundle
-        run: python scripts/vibe_audit_packer.py
-
-      - name: Upload VAF Context as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe-audit-context
-          path: .vibe_audit/CURRENT_CONTEXT.md
+# Isključivanje redakcije tajni (⚠️ pažnja: ne preporučuje se)
+vaf pack --no-redact
 ```
+
+### 2. Automatsko skeniranje (`vaf scan`)
+Pokreće podržane bezbednosne alate na projektu.
+
+```bash
+# Pokretanje svih detektovanih skenera
+vaf scan
+
+# Pokretanje samo specifičnih alata
+vaf scan --tools bandit,semgrep
+
+# Neuspeh procesa (exit code 1) ako se pronađu Critical/High nalazi
+vaf scan --fail-on-high
+```
+
+### 3. Generisanje izveštaja (`vaf report`)
+Konvertuje rezultate automatskog skeniranja u strukturisane formate.
+
+```bash
+# Generisanje podrazumevanog Markdown izveštaja
+vaf report
+
+# Generisanje JSON i SARIF izveštaja za GitHub Code Scanning
+vaf report --format json,sarif
+```
+
+### 4. PR Risk Analiza (`vaf pr-review`)
+Daje bezbednosnu procenu izmena pre spajanja PR-a.
+
+```bash
+vaf pr-review --base main --head HEAD
+```
+
+### 5. Verifikacija LLM izveštaja (`vaf verify`)
+Proverava da li su nalazi iz LLM audit izveštaja konzistentni sa fajlovima u indeksu dokaza.
+
+```bash
+vaf verify .vibe_audit/audit_report.md
+```
+
+---
+
+## Ugrađene Persone i Standardi (v3.0)
+
+U `prompts/pro_audit_prompt.md` integrisane su četiri nezavisne persone za pregled:
+
+1. **Senior Application Security Auditor**:
+   - OWASP Top 10:2025, OWASP API Security Top 10:2023, OWASP ASVS 5.0 (Application Security Verification Standard, maj 2025).
+   - Supply chain analize: OpenSSF Scorecard, SLSA, SBOM provera.
+2. **Principal Systems Architect**:
+   - Sonar AI Code Assurance standardi (0 novih Critical/High, ≥80% coverage, ≤3% dupliranje).
+   - SOLID principi, tehnički dug i kompleksnost.
+3. **QA & Business Logic Analyst**:
+   - WCAG 2.2 AA standard pristupačnosti (9 novih kriterijuma).
+   - GDPR usklađenost (Čl. 25, 30, 32).
+4. **AI/Agentic Systems Auditor** [NOVO v3.0]:
+   - OWASP LLM Top 10:2025 i OWASP Agentic Top 10:2026.
+   - Analiza rizika prompt injection-a, indirect prompt injection-a, tool permissions i human approval kontrola.
+
+---
+
+## CI/CD Integracija
+
+Primer postavljanja VAF bezbednosnih provera u GitHub Actions nalazi se u fajlu [.github/workflows/vaf-action-template.yml](file:///d:/ProjektiApp/analizaprojekta/.github/workflows/vaf-action-template.yml). On automatski pakuje projekat, pokreće skenere, eksportuje SARIF i dodaje komentar sa verdict-om direktno na vaš Pull Request.
 
 ---
 
 <div id="english-version-"></div>
 
-# Vibe-Audit Framework (VAF) v2.0 🛡️🤖 (English)
+# Vibe-Audit Framework (VAF) v3.0 🛡️🤖 (English)
 
-**Comprehensive multi-dimensional software audit framework for AI-assisted ("vibe coded") applications.**
+**Comprehensive DevSecOps framework and CLI tool for multi-dimensional software audits of AI-assisted ("vibe coded") applications.**
 
-VAF enables any LLM (Gemini, Claude, ChatGPT, Cursor, Cline) to perform a complete, evidence-based audit from three independent perspectives - eliminating tunnel vision. Includes a Pro Mega-Prompt with embedded OWASP Top 10:2025, OWASP API Security Top 10:2023, WCAG 2.2 AA, and GDPR Art.25/30/32 standards.
+VAF v3.0 transforms the review process from a basic prompt-packer script into an installable security utility integrated into your CI/CD pipeline. It guides AI models (Gemini, Claude, ChatGPT, Cursor, Cline) to perform complete, evidence-based code audits from four independent perspectives to prevent LLM "tunnel vision."
+
+---
+
+## Key Features in v3.0
+
+- **CLI-Driven Audit Suite**: Run your audit with the `vaf` CLI command after running `pip install -e .`.
+- **Configurable (`vaf.config.yaml`)**: Manage limits, file exclusions, security gates, and scanners from a project configuration file.
+- **Secrets Firewall (Redaction)**: Automatically masks API keys, JWT tokens, passwords, and private credentials before packaging. Outputs a safe `secrets_report.json` detailing found risk types without leaking values.
+- **Tamper-Evident Index (`evidence_index.json`)**: Builds SHA-256 hashes of all included files to ensure the audit findings map to code that was actually analyzed.
+- **Anti-Hallucination Verification (`vaf verify`)**: Checks LLM findings to verify that referenced files, functions, and lines actually exist within the evidence index.
+- **Scanners Pipeline (`vaf scan`)**: Integrates and normalizes outputs from Trivy, Bandit, Semgrep, and Gitleaks.
+- **Multi-Format Exporters (`vaf report`)**: Exports results to Markdown summaries, structured JSON, or standard SARIF 2.1.0 to upload findings directly to GitHub Code Scanning.
+- **PR Review Mode (`vaf pr-review`)**: Analyzes git diffs and alerts developers of security-critical changes or testing gaps before merging.
 
 ---
 
 ## Quick Start
 
-### Step 1: Copy to your project
-Copy `.cursorrules`, `llms.txt`, `prompts/pro_audit_prompt.md`, `scripts/vibe_audit_packer.py`, and the `templates/` directory to your project root.
-
-### Step 2: Package the context
+### 1. Install VAF
 ```bash
-# Deep analysis (recommended)
-python scripts/vibe_audit_packer.py
-
-# Quick check mode
-python scripts/vibe_audit_packer.py --mode quick
-
-# Target a different project path
-python scripts/vibe_audit_packer.py --path /path/to/project
+git clone https://github.com/zoxknez/post-vibe-audit.git
+cd post-vibe-audit
+pip install -e ".[dev]"
 ```
 
-### Step 3: Run the audit
-Drag `.vibe_audit/CURRENT_CONTEXT.md` into Claude, Gemini, ChatGPT, or any LLM.
+### 2. Package and Audit
+```bash
+# Package code context (masks secrets, writes evidence index)
+vaf pack
 
-The AI will automatically:
-1. Build a scope & artifact matrix
-2. Run Persona 1: Senior Application Security Auditor (OWASP Top 10:2025 + API Security:2023)
-3. Run Persona 2: Principal Systems Architect (SonarQube AI Code gate, SOLID, tech debt)
-4. Run Persona 3: QA & Business Logic Analyst (error handling, WCAG 2.2, GDPR)
-5. Apply self-critique to eliminate anchoring bias and halo effect
-6. Deliver a structured report with go/conditional go/no-go verdict
+# Run automated scanners (e.g. Semgrep, Bandit)
+vaf scan
+
+# Export reports in Markdown and SARIF formats
+vaf report --format markdown,sarif
+```
+
+### 3. Review findings with LLM
+Upload `.vibe_audit/CURRENT_CONTEXT.md` alongside the instructions in `prompts/pro_audit_prompt.md` to Claude, Gemini Pro, or your favorite AI interface.
 
 ---
 
-## Embedded Standards (all current as of 2025)
+## Embedded Personas & Standards
 
-- **OWASP Top 10:2025** - A01 Broken Access Control through A10 Mishandling of Exceptional Conditions
-- **OWASP API Security Top 10:2023** - BOLA, Broken Auth, BFLA, SSRF, Improper Inventory Management
-- **WCAG 2.2 AA** - All 9 new criteria (2.4.11, 2.4.13, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8)
-- **GDPR** - Art.25 Privacy by Design, Art.30 RoPA, Art.32 Security of Processing
-- **SonarQube "Sonar way for AI Code"** - Zero new Critical/High, ≥80% coverage, ≤3% duplication
-- **Trivy 0.50+** - `--scanners vuln,misconfig,secret,license`
-- **Locust headless** - `-u`, `-r`, `--run-time`, `--html`, `--json-file`, `--csv`
+1. **Senior Application Security Auditor**: OWASP Top 10:2025, OWASP API Security:2023, OWASP ASVS 5.0, supply-chain checks (OpenSSF, SLSA).
+2. **Principal Systems Architect**: Sonar AI Code Assurance guidelines, SOLID principles, technical debt.
+3. **QA & Business Logic Analyst**: WCAG 2.2 AA accessibility, GDPR (Articles 25/30/32) privacy by design.
+4. **AI/Agentic Systems Auditor** [NEW v3.0]: OWASP LLM Top 10:2025, OWASP Agentic Top 10:2026, prompt injection risks, tool execution permissions.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](file:///d:/ProjektiApp/analizaprojekta/LICENSE) file for details.
